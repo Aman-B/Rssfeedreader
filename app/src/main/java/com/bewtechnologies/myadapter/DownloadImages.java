@@ -14,7 +14,7 @@ import java.net.URL;
  */
 public class DownloadImages extends AsyncTask <String,URI,Bitmap>{
 Bitmap bmp;
-
+static boolean  image= false;
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         super.onPostExecute(bitmap);

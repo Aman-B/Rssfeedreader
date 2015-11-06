@@ -1,5 +1,6 @@
 package com.bewtechnologies.rssfeedreader;
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -23,12 +24,13 @@ import java.util.Date;
 /**
  * Created by Aman  on 10/28/2015.
  */
-class RssDataController extends
+public class RssDataController extends
         AsyncTask <String,Integer,ArrayList> {
 
     private MainActivity.RSSXMLTag currentTag;
     public  postData[] listData;
     int i=0;
+    public ProgressDialog ringProgressDialog;
 
     @Override
     protected void onProgressUpdate(Integer... values) {
@@ -38,8 +40,16 @@ class RssDataController extends
     }
 
     @Override
-    protected void onPreExecute() {
+    protected void onPreExecute()
+    {
         super.onPreExecute();
+
+
+    /* ringProgressDialog= ProgressDialog.show(MainActivity.con,"Please wait...","Downloading stuff", true);
+
+        ringProgressDialog.setCancelable(true);*/
+
+
 
 
     }
@@ -142,7 +152,7 @@ class RssDataController extends
                             case DESC:
                                 if((content.length()>0) &&(content.contains("<img src"))){ //fetching img url from inside description tag...
 
-                                    String closer_to_url=getSubString(content,"alt","src");
+                                    String closer_to_url=getSubString(content,"alt=","src");
                                     String almost_got_imgurl=closer_to_url.substring(closer_to_url.indexOf("//"));
                                     Log.i("almost url",almost_got_imgurl);
                                     String imgurl= almost_got_imgurl.substring(almost_got_imgurl.indexOf("//"),almost_got_imgurl.indexOf("\""));
@@ -277,5 +287,15 @@ class RssDataController extends
 
         MainActivity.my_listview.setAdapter(itemAdapter);
 
+        Dataentry de = new Dataentry();
+        de.execute(result);
+
+//        ringProgressDialog.dismiss();
+
+
     }
+
+
+
+
 }

@@ -1,13 +1,19 @@
 package com.bewtechnologies.rssfeedreader;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.bewtechnologies.com.bewtechnologies.httptask.HTTPDownloadTask;
+import com.bewtechnologies.com.bewtechnologies.httptask.MyProgressDialog;
 import com.bewtechnologies.myadapter.postData;
 
 
@@ -18,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     public  postData[] listData;
     public static Context con;
     public static ListView my_listview;
+    private Handler updateHandler;
 
 
     @Override
@@ -25,19 +32,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         con=MainActivity.this;
+        updateHandler = new Handler();
 
        // this.generateDummyData();
 
+     /*   launchRingDialog();*/
+
+        if(isOnline()) {
+           /* HTTPDownloadTask check = new HTTPDownloadTask();
+            check.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");*/
+            MyProgressDialog pd = new MyProgressDialog();
+            pd.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
+/*            RssDataController rc = new RssDataController();
+            rc.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");*/
+        }
+        else
+        {
+            Toast.makeText(con,"Darn! No internet connection. ",Toast.LENGTH_SHORT).show();
+        }
         my_listview= (ListView) this.findViewById(R.id.postListView);
      //   ArrayAdapter<String> itemAdapter =new ArrayAdapter<String>(this,R.layout.postitem,listData);
 
 
 
-        HTTPDownloadTask check = new HTTPDownloadTask();
-        check.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
 
-        RssDataController rc = new RssDataController();
-        rc.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
 
 
 //        PostItemAdapter itemAdapter = new PostItemAdapter(this, R.layout.postitem,listData);
@@ -45,6 +63,43 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
+    }
+
+    private void launchRingDialog()
+    {
+        final ProgressDialog ringProgressDialog= ProgressDialog.show(MainActivity.this,"Please wait...","Downloading stuff", true);
+        ringProgressDialog.setCancelable(true);
+
+        new Thread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try{ //Starting async task
+
+
+
+//                    Thread.sleep(2000);
+
+                }
+                catch(Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+                ringProgressDialog.dismiss(); //Task done, dimiss the dialog.
+            }
+        }).start();
+
+
+    }
+
     public enum RSSXMLTag {
         TITLE, DATE, LINK, CONTENT, GUID, IGNORETAG, RSSXMLTag,IMAGE,DESC;
     }
@@ -68,6 +123,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isOnline()) {
+            HTTPDownloadTask check = new HTTPDownloadTask();
+            check.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
+
+            RssDataController rc = new RssDataController();
+            rc.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
+        }
+        else
+        {
+            Toast.makeText(con,"Darn! No internet connection. ",Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

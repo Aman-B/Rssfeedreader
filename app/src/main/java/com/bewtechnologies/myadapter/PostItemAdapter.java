@@ -25,10 +25,13 @@ public class PostItemAdapter extends ArrayAdapter<postData> {
 
     private Activity myContext;
     private  postData[] data;
+    public static Bitmap[] bitmaps = new Bitmap[20];
+    int i=0;
 
 
     public PostItemAdapter(Context context, int textViewResourceId, postData[] objects)
     {
+
 
         super(context, textViewResourceId, objects);
 
@@ -74,37 +77,39 @@ public class PostItemAdapter extends ArrayAdapter<postData> {
             viewHolder=(ViewHolder) convertView.getTag();
         }
 
-
-        if(data[position].postThumbUrl!=null)
+        if(data[position]!=null)
         {
-            DownloadImages dim = new DownloadImages();
-            Bitmap bmp= null;
-            try {
-                bmp = dim.execute(data[position].postThumbUrl).get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+            i++;
+                if (data[position].postThumbUrl != null) {
+                    viewHolder.postThumbView.setImageResource(R.drawable.ic_launcher);
+                    DownloadImages dim = new DownloadImages();
+                    Bitmap bmp = null;
+                    try {
+                        bmp = dim.execute(data[position].postThumbUrl).get();
+                        bitmaps[i]=bmp;
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
 
 
-            viewHolder.postThumbView.setImageBitmap(bmp);
+                    viewHolder.postThumbView.setImageBitmap(bmp);
+                }
+
+
+                if (data[position].postThumbUrl == null) {
+                    viewHolder.postThumbView.setImageResource(R.drawable.ic_launcher);
+                }
+
+
+                viewHolder.postTitleView.setText(data[position].postTitle);
+                /*
+                    set textview value in from postData to postitem.xml and data[position] gets
+                    it value in MainActivity, see the declaration there.
+                */
         }
-
-
-        if(data[position].postThumbUrl == null)
-        {
-            viewHolder.postThumbView.setImageResource(R.drawable.ic_launcher);
-        }
-
-
-
-        viewHolder.postTitleView.setText(data[position].postTitle);
-        /*
-            set textview value in from postData to postitem.xml and data[position] gets
-            it value in MainActivity, see the declaration there.
-        */
-
 
 
         return convertView;
