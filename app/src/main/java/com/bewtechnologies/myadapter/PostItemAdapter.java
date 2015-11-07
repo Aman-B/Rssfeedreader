@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bewtechnologies.rssfeedreader.R;
+import com.bewtechnologies.rssfeedreader.RssDataController;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -53,7 +55,8 @@ public class PostItemAdapter extends ArrayAdapter<postData> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent)
-    {
+    {        Log.i("Insider:4", "yes");
+
         ViewHolder viewHolder;
 
         if(convertView==null)
@@ -81,22 +84,10 @@ public class PostItemAdapter extends ArrayAdapter<postData> {
         {
             i++;
                 if (data[position].postThumbUrl != null) {
-                    viewHolder.postThumbView.setImageResource(R.drawable.ic_launcher);
-                    DownloadImages dim = new DownloadImages();
-                    Bitmap bmp = null;
-                    try {
-                        bmp = dim.execute(data[position].postThumbUrl).get();
-                        bitmaps[i]=bmp;
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
+                    //viewHolder.postThumbView.setImageResource(R.drawable.ic_launcher);
 
 
-                    viewHolder.postThumbView.setImageBitmap(bmp);
-                }
+viewHolder.postThumbView.setImageBitmap(RssDataController.got_images[position]);                }
 
 
                 if (data[position].postThumbUrl == null) {

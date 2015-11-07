@@ -1,9 +1,11 @@
 package com.bewtechnologies.rssfeedreader;
 
 import android.app.ProgressDialog;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.bewtechnologies.myadapter.DownloadImages;
 import com.bewtechnologies.myadapter.PostItemAdapter;
 import com.bewtechnologies.myadapter.postData;
 
@@ -20,6 +22,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Aman  on 10/28/2015.
@@ -27,9 +30,19 @@ import java.util.Date;
 public class RssDataController extends
         AsyncTask <String,Integer,ArrayList> {
 
+    //Arraylist for db
+   public static ArrayList db_data;
+
+    //saving image urls
+    public static String[] image_urls = new String[10];
+
+    //save returned images from DownloadImages
+  public static  Bitmap[] got_images= new Bitmap[10];
+
     private MainActivity.RSSXMLTag currentTag;
     public  postData[] listData;
     int i=0;
+    int img_index=0;
     public ProgressDialog ringProgressDialog;
 
     @Override
@@ -150,7 +163,8 @@ public class RssDataController extends
                         switch (currentTag)
                         {
                             case DESC:
-                                if((content.length()>0) &&(content.contains("<img src"))){ //fetching img url from inside description tag...
+                                if((content.length()>0) &&(content.contains("<img src")))
+                                { //fetching img url from inside description tag...
 
                                     String closer_to_url=getSubString(content,"alt=","src");
                                     String almost_got_imgurl=closer_to_url.substring(closer_to_url.indexOf("//"));
@@ -160,6 +174,11 @@ public class RssDataController extends
                                     Log.i("new url",imgurl);
                                 Log.i("Ab lo : ", content);
 
+                                    //save image urls
+                                    if(img_index<10)
+                                    {
+                                        image_urls[img_index++] = imgurl;
+                                    }
                                     if(pdData.postThumbUrl!=null)
                                     {
                                         pdData.postThumbUrl+=imgurl;
@@ -169,7 +188,13 @@ public class RssDataController extends
                                         pdData.postThumbUrl=imgurl;
                                     }
                                 }
-
+                                else
+                                {
+                                    if(img_index<10)
+                                    {
+                                        image_urls[img_index++] = null;
+                                    }
+                                }
 
 
 
@@ -271,24 +296,41 @@ public class RssDataController extends
     protected void onPostExecute(ArrayList result) {
 // TODO Auto-generated method stub
 
-        Log.i("Lel ", MainActivity.con+"---"+R.layout.postitem+"---"+listData);
-        listData=new postData[10];
+        db_data=result;
+      //  Log.i("Lel ", MainActivity.con+"---"+R.layout.postitem+"---"+listData);
 
-        for (int i = 0; i < result.size(); i++) {
+        DownloadImages downimgs = new DownloadImages();
+        try { got_images=downimgs.execute(image_urls).get();
 
-            System.out.println("data : " + result.get(i).toString());
-            listData[i]= (postData)result.get(i);
 
-            System.out.println("data : " + result.get(i).toString());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        Log.i("Insider:2","yes");
+       /* if(downimgs.getStatus().equals(AsyncTask.Status.FINISHED))*/ {
+
+            Log.i("Insider:3","yes");
+            listData = new postData[10];
+
+            for (int i = 0; i < result.size(); i++) {
+
+                System.out.println("data : " + result.get(i).toString());
+                listData[i] = (postData) result.get(i);
+
+                System.out.println("data : " + result.get(i).toString());
+            }
+
+            PostItemAdapter itemAdapter = new PostItemAdapter(MainActivity.con, R.layout.postitem, listData);
+
+
+            MainActivity.my_listview.setAdapter(itemAdapter);
+
+            Dataentry de = new Dataentry();
+            de.execute(RssDataController.db_data);
         }
 
-        PostItemAdapter itemAdapter= new PostItemAdapter(MainActivity.con,R.layout.postitem,listData);
-
-
-        MainActivity.my_listview.setAdapter(itemAdapter);
-
-        Dataentry de = new Dataentry();
-        de.execute(result);
 
 //        ringProgressDialog.dismiss();
 

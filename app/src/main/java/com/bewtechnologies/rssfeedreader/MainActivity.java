@@ -4,9 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -25,43 +28,59 @@ public class MainActivity extends AppCompatActivity {
     public static Context con;
     public static ListView my_listview;
     private Handler updateHandler;
+    MyProgressDialog pd;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        con=MainActivity.this;
-        updateHandler = new Handler();
+        con = MainActivity.this;
+        updateHandler = new Handler() {
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
 
-       // this.generateDummyData();
+            }
+        };
+
+        // this.generateDummyData();
 
      /*   launchRingDialog();*/
 
-        if(isOnline()) {
+        if (isOnline()) {
            /* HTTPDownloadTask check = new HTTPDownloadTask();
             check.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");*/
-            MyProgressDialog pd = new MyProgressDialog();
+
+
+            pd = new MyProgressDialog();
             pd.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
 /*            RssDataController rc = new RssDataController();
             rc.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");*/
+
+
+        } else {
+            Toast.makeText(con, "Darn! No internet connection. ", Toast.LENGTH_SHORT).show();
         }
-        else
-        {
-            Toast.makeText(con,"Darn! No internet connection. ",Toast.LENGTH_SHORT).show();
-        }
-        my_listview= (ListView) this.findViewById(R.id.postListView);
-     //   ArrayAdapter<String> itemAdapter =new ArrayAdapter<String>(this,R.layout.postitem,listData);
 
 
+        my_listview = (ListView) this.findViewById(R.id.postListView);
+        //   ArrayAdapter<String> itemAdapter =new ArrayAdapter<String>(this,R.layout.postitem,listData);
+        if (pd.getStatus() == AsyncTask.Status.FINISHED) {
+            new Thread() {
+                @Override
+                public void run() {
+                    if ((isOnline())) {
+                        Log.i("inside?:", "yes");
 
+                    }
 
-
+                }
+            }.start();
 
 //        PostItemAdapter itemAdapter = new PostItemAdapter(this, R.layout.postitem,listData);
 
 
-
+        }
     }
 
     public boolean isOnline() {

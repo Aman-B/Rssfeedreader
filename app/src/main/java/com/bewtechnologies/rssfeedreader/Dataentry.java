@@ -24,6 +24,7 @@ public class Dataentry extends AsyncTask<ArrayList,Integer,String>{
     @Override
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
+        Log.i("Insidering", "yes");
         Toast.makeText(MainActivity.con,"Data Saved! here : "+newrowid,Toast.LENGTH_SHORT).show();
 
     }
@@ -65,9 +66,9 @@ public class Dataentry extends AsyncTask<ArrayList,Integer,String>{
 
         for(int i=0;i<size;i++)
         {
-            Log.i("bitmap","here:"+PostItemAdapter.bitmaps[i]);
+            Log.i("bitmap","here:"+RssDataController.got_images[i]);
             if(PostItemAdapter.bitmaps[i]!=null) {
-              image = getImageBytes(PostItemAdapter.bitmaps[i]);
+              image = getImageBytes(RssDataController.got_images[i]);
             }
 
            // values.put(FeedReaderContract.FeedEntry._ID ,i);
