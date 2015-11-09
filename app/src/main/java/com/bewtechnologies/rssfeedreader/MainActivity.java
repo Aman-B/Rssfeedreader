@@ -36,13 +36,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         con = MainActivity.this;
-        updateHandler = new Handler() {
+        /*updateHandler = new Handler() {
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
 
             }
         };
-
+*/
         // this.generateDummyData();
 
      /*   launchRingDialog();*/
@@ -58,13 +58,19 @@ public class MainActivity extends AppCompatActivity {
             rc.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");*/
 
 
-        } else {
-            Toast.makeText(con, "Darn! No internet connection. ", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(con, "Damn! No internet connection. ", Toast.LENGTH_SHORT).show();
         }
 
 
         my_listview = (ListView) this.findViewById(R.id.postListView);
         //   ArrayAdapter<String> itemAdapter =new ArrayAdapter<String>(this,R.layout.postitem,listData);
+
+        //TODO : Check this too condition for god knows what
+     /*   if(pd!=null)
+        {
         if (pd.getStatus() == AsyncTask.Status.FINISHED) {
             new Thread() {
                 @Override
@@ -76,11 +82,11 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }.start();
-
+        }
 //        PostItemAdapter itemAdapter = new PostItemAdapter(this, R.layout.postitem,listData);
 
 
-        }
+        }*/
     }
 
     public boolean isOnline() {

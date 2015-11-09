@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.bewtechnologies.com.bewtechnologies.httptask.MyProgressDialog;
 import com.bewtechnologies.myadapter.DownloadImages;
 import com.bewtechnologies.myadapter.PostItemAdapter;
 import com.bewtechnologies.myadapter.postData;
@@ -235,6 +236,7 @@ public class RssDataController extends
                                     } else
                                     {
                                         pdData.postLink = content;
+                                        Log.d("link", content);
                                     }
                                 }
                                 break;
@@ -311,7 +313,7 @@ public class RssDataController extends
         Log.i("Insider:2","yes");
        /* if(downimgs.getStatus().equals(AsyncTask.Status.FINISHED))*/ {
 
-            Log.i("Insider:3","yes");
+            Log.i("Insider:3", "yes");
             listData = new postData[10];
 
             for (int i = 0; i < result.size(); i++) {
@@ -327,12 +329,17 @@ public class RssDataController extends
 
             MainActivity.my_listview.setAdapter(itemAdapter);
 
-            Dataentry de = new Dataentry();
-            de.execute(RssDataController.db_data);
+
+
+           // MyProgressDialog.ringProgressDialog.dismiss();
+
+            //TODO : Check this part later
+            /*Dataentry de = new Dataentry();
+            de.execute(RssDataController.db_data);*/
         }
 
 
-//        ringProgressDialog.dismiss();
+   MyProgressDialog. ringProgressDialog.dismiss();
 
 
     }

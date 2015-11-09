@@ -2,8 +2,10 @@ package com.bewtechnologies.myadapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bewtechnologies.rssfeedreader.MainActivity;
 import com.bewtechnologies.rssfeedreader.R;
 import com.bewtechnologies.rssfeedreader.RssDataController;
 
@@ -69,10 +72,13 @@ public class PostItemAdapter extends ArrayAdapter<postData> {
             viewHolder.postThumbView = (ImageView)  convertView.findViewById(R.id.postThumb);
             viewHolder.postTitleView = (TextView) convertView.findViewById(R.id.postTitleLabel);
 
+
             viewHolder.postDataView= (TextView) convertView.findViewById(R.id.postDateLabel);
+
 
             convertView.setTag(viewHolder); //setting tag  which saves views that have been already initialized but are out of sight.
 
+            convertView.setOnClickListener(mOnTitleClickListener);
         }
 
         else
@@ -83,11 +89,13 @@ public class PostItemAdapter extends ArrayAdapter<postData> {
         if(data[position]!=null)
         {
             i++;
-                if (data[position].postThumbUrl != null) {
+                if (data[position].postThumbUrl != null)
+                {
                     //viewHolder.postThumbView.setImageResource(R.drawable.ic_launcher);
 
 
-viewHolder.postThumbView.setImageBitmap(RssDataController.got_images[position]);                }
+                    viewHolder.postThumbView.setImageBitmap(RssDataController.got_images[position]);
+                }
 
 
                 if (data[position].postThumbUrl == null) {
@@ -103,8 +111,20 @@ viewHolder.postThumbView.setImageBitmap(RssDataController.got_images[position]);
         }
 
 
+
         return convertView;
     }
+
+
+    private View.OnClickListener mOnTitleClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final int position = MainActivity.my_listview.getPositionForView( v);
+            Log.v("See", "Title clicked, row "+position);
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(data[position].postLink));
+            MainActivity.con.startActivity(browserIntent);
+        }
+    };
 }
 
 
