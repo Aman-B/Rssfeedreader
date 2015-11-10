@@ -1,9 +1,12 @@
 package com.bewtechnologies.rssfeedreader;
 
 import android.app.ProgressDialog;
+import android.appwidget.AppWidgetHost;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.bewtechnologies.com.bewtechnologies.httptask.MyProgressDialog;
 import com.bewtechnologies.myadapter.DownloadImages;
@@ -262,6 +265,7 @@ public class RssDataController extends
                 eventType = xpp.next();
             }
             Log.v("tst", String.valueOf((postDataList.size())));
+            connection.disconnect();
         } catch (MalformedURLException e) {
 // TODO Auto-generated catch block
             e.printStackTrace();
@@ -279,6 +283,7 @@ public class RssDataController extends
             e.printStackTrace();
         }
         Log.i("Lel ", MainActivity.con + "---" + R.layout.postitem + "--  " + listData);
+
         return postDataList;
     }
 
@@ -336,10 +341,12 @@ public class RssDataController extends
             //TODO : Check this part later
             /*Dataentry de = new Dataentry();
             de.execute(RssDataController.db_data);*/
+
+
         }
 
-
-   MyProgressDialog. ringProgressDialog.dismiss();
+        MainActivity.pb.setVisibility(View.GONE);
+   //MyProgressDialog. ringProgressDialog.dismiss();
 
 
     }

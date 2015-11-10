@@ -1,7 +1,9 @@
 package com.bewtechnologies.com.bewtechnologies.httptask;
 
 import android.app.ProgressDialog;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
+import android.view.View;
 
 import com.bewtechnologies.rssfeedreader.MainActivity;
 import com.bewtechnologies.rssfeedreader.RssDataController;
@@ -18,9 +20,9 @@ public class MyProgressDialog extends AsyncTask <String,Integer,String>{
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        ringProgressDialog= ProgressDialog.show(MainActivity.con, "Please wait...", "Downloading stuff", true);
+       /* ringProgressDialog= ProgressDialog.show(MainActivity.con, "Please wait...", "Downloading stuff", true);
 
-        ringProgressDialog.setCancelable(true);
+        ringProgressDialog.setCancelable(true);*/
         rc= new RssDataController();
          rc.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
 
@@ -31,7 +33,7 @@ public class MyProgressDialog extends AsyncTask <String,Integer,String>{
     protected void onProgressUpdate(Integer... values) {
         super.onProgressUpdate(values);
 
-
+        //ringProgressDialog.setMessage("Almost there.");
     }
 
     @Override
@@ -44,6 +46,7 @@ public class MyProgressDialog extends AsyncTask <String,Integer,String>{
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
 
+        //MainActivity.pb.setVisibility(View.GONE);
        // ringProgressDialog.dismiss();
 
     }

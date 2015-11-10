@@ -12,15 +12,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.bewtechnologies.com.bewtechnologies.httptask.HTTPDownloadTask;
 import com.bewtechnologies.com.bewtechnologies.httptask.MyProgressDialog;
 import com.bewtechnologies.myadapter.postData;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
    // private  String[] listData = {"post1","post2","post3","post4","post5","post6"};
 
@@ -29,34 +42,131 @@ public class MainActivity extends AppCompatActivity {
     public static ListView my_listview;
     private Handler updateHandler;
     MyProgressDialog pd;
-
+    public static ProgressBar pb;
+    public String Selected_language = "English";
+    private Spinner lang;
+    private boolean worldwide = false;
+    Switch area_selection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         con = MainActivity.this;
-        /*updateHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
+
+        //launch RSS
+        checkIfOnlineAndLaunchRss("English",worldwide);
+        my_listview = (ListView) this.findViewById(R.id.postListView);
+
+
+        //toggle button
+     /*   ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
+
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // The toggle is enabled
+                    Hindi = 1;
+                    //launch RSS
+                    checkIfOnlineAndLaunchRss(Hindi);
+
+                } else {
+
+                    // The toggle is disabled
+
+                    Hindi = 2;
+                    //launch RSS
+                    checkIfOnlineAndLaunchRss(Hindi);
+                }
+            }
+        });
+*/
+        //TODO : Put a condition for regionwise and worldwide,for now checking worldwide
+
+
+        //Putting language choice using spinnner. Hindi and Enlish only for now.
+
+        lang =(Spinner) findViewById(R.id.language);
+
+        //insert values in Spinner.
+        initializeSpinner();
+
+        //setonTouchlistener on item of Spinner
+        initializeTouchListener();
+
+        //switch for regional and worldwide news selection.
+        area_selection = (Switch) findViewById(R.id.switch1);
+
+        area_selection.setOnCheckedChangeListener(this);
+
+
+
+
+    //end of oncreate
+    }
+
+    private void initializeTouchListener() {
+
+        lang.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Selected_language = String.valueOf(lang.getSelectedItem());
+
+                pb.setVisibility(View.VISIBLE);
+                checkIfOnlineAndLaunchRss(Selected_language, worldwide);
 
             }
-        };
-*/
-        // this.generateDummyData();
 
-     /*   launchRingDialog();*/
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            //do nothing
+            }
+        });
+
+
+    }
+
+    private void initializeSpinner()
+    {
+        String[] langlist= new String[]{
+           "English","Hindi"
+        };
+
+        ArrayAdapter<String> setItems = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,langlist);
+        lang.setAdapter(setItems);
+
+    }
+
+    private void checkIfOnlineAndLaunchRss(String language,boolean worldwide)
+    {
+
 
         if (isOnline()) {
-           /* HTTPDownloadTask check = new HTTPDownloadTask();
-            check.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");*/
 
 
-            pd = new MyProgressDialog();
-            pd.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
-/*            RssDataController rc = new RssDataController();
-            rc.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");*/
+            pb= (ProgressBar) findViewById(R.id.pbr);
 
+            RssDataController rc = new RssDataController();
+
+            if((language.equals("Hindi")) &&(!worldwide))
+            {
+                rc.execute("http://news.google.co.in/news?cf=all&hl=hi&ned=hi_in&output=rss");
+            }
+            else if((language.equals("Hindi"))&&(worldwide))
+            {
+                rc.execute("http://news.google.co.in/news?cf=all&hl=hi&ned=hi_in&topic=w&output=rss");
+
+            }
+            else if(language.equals("English")&&(!worldwide))
+            {
+
+                rc.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
+            }
+
+            else if(language.equals("English")&&(worldwide))
+            {
+                rc.execute("http://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&topic=w&output=rss");
+            }
 
         }
         else
@@ -65,28 +175,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        my_listview = (ListView) this.findViewById(R.id.postListView);
-        //   ArrayAdapter<String> itemAdapter =new ArrayAdapter<String>(this,R.layout.postitem,listData);
 
-        //TODO : Check this too condition for god knows what
-     /*   if(pd!=null)
-        {
-        if (pd.getStatus() == AsyncTask.Status.FINISHED) {
-            new Thread() {
-                @Override
-                public void run() {
-                    if ((isOnline())) {
-                        Log.i("inside?:", "yes");
-
-                    }
-
-                }
-            }.start();
-        }
-//        PostItemAdapter itemAdapter = new PostItemAdapter(this, R.layout.postitem,listData);
-
-
-        }*/
     }
 
     public boolean isOnline() {
@@ -96,34 +185,23 @@ public class MainActivity extends AppCompatActivity {
         return netInfo != null && netInfo.isConnected();
     }
 
-    private void launchRingDialog()
-    {
-        final ProgressDialog ringProgressDialog= ProgressDialog.show(MainActivity.this,"Please wait...","Downloading stuff", true);
-        ringProgressDialog.setCancelable(true);
-
-        new Thread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                try{ //Starting async task
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if(isChecked) {
+            //do stuff when Switch is ON. (Worldwide news)
+            worldwide=true;
+            pb.setVisibility(View.VISIBLE);
+            checkIfOnlineAndLaunchRss(Selected_language,worldwide);
 
 
-
-//                    Thread.sleep(2000);
-
-                }
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
-
-                ringProgressDialog.dismiss(); //Task done, dimiss the dialog.
-            }
-        }).start();
-
-
+        } else {
+            //do stuff when Switch if OFF (Country-wise news)
+            worldwide=false;
+            pb.setVisibility(View.VISIBLE);
+            checkIfOnlineAndLaunchRss(Selected_language,worldwide);
+        }
     }
+
 
     public enum RSSXMLTag {
         TITLE, DATE, LINK, CONTENT, GUID, IGNORETAG, RSSXMLTag,IMAGE,DESC;
