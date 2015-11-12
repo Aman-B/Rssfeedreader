@@ -55,9 +55,10 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
         con = MainActivity.this;
 
         //launch RSS
-        checkIfOnlineAndLaunchRss("English",worldwide);
+        if(!((Selected_language.equals("Hindi"))&&(worldwide))) {
+            checkIfOnlineAndLaunchRss("English", worldwide);
+        }
         my_listview = (ListView) this.findViewById(R.id.postListView);
-
 
         //toggle button
      /*   ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
@@ -230,18 +231,15 @@ public class MainActivity extends AppCompatActivity implements CompoundButton.On
     @Override
     protected void onResume() {
         super.onResume();
-        if(isOnline()) {
-            HTTPDownloadTask check = new HTTPDownloadTask();
-            check.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
 
-            RssDataController rc = new RssDataController();
-            rc.execute("https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in&output=rss");
+        if(!((Selected_language.equals("Hindi"))&&(worldwide))) {
+            checkIfOnlineAndLaunchRss("English", worldwide);
         }
+
         else
         {
-            Toast.makeText(con,"Darn! No internet connection. ",Toast.LENGTH_SHORT).show();
+            checkIfOnlineAndLaunchRss("Hindi",worldwide);
         }
-
     }
 
     @Override
